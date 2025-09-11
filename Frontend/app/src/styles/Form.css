@@ -1,18 +1,21 @@
-:root {
+/* scoped to auth pages only */
+.auth-page {
   --primary: #000000;
   --secondary: #FFFFFF;
   --accent: #FF5E5B;
   --shadow: 8px 8px 0px var(--primary);
 }
 
-* {
+/* resets & base inside auth area only */
+.auth-page * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Courier New', monospace;
 }
 
-body {
+/* make sure the auth body layout applies only when body has .auth-page */
+.auth-page {
   background-color: var(--secondary);
   display: flex;
   justify-content: center;
@@ -21,7 +24,7 @@ body {
   padding: 20px;
 }
 
-.login-container {
+.auth-page .login-container {
   width: 100%;
   max-width: 400px;
   border: 1px solid var(--primary);
@@ -32,7 +35,7 @@ body {
   border-radius: 12px;
 }
 
-.login-container::before {
+.auth-page .login-container::before {
   content: '';
   position: absolute;
   top: 6px;
@@ -44,7 +47,7 @@ body {
   border-radius: 12px;
 }
 
-h1 {
+.auth-page h1 {
   color: var(--primary);
   margin-bottom: 30px;
   font-size: 28px;
@@ -52,19 +55,19 @@ h1 {
   text-align: center;
 }
 
-.input-group {
+.auth-page .input-group {
   margin-bottom: 20px;
   position: relative;
 }
 
-label {
+.auth-page label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
   color: var(--primary);
 }
 
-input {
+.auth-page input {
   width: 100%;
   padding: 12px 15px;
   border: 2px solid var(--primary);
@@ -74,11 +77,11 @@ input {
   transition: all 0.3s;
 }
 
-input:focus {
+.auth-page input:focus {
   box-shadow: 4px 4px 0px var(--primary);
 }
 
-button {
+.auth-page button {
   width: 100%;
   padding: 12px;
   background-color: var(--accent);
@@ -91,12 +94,12 @@ button {
   transition: all 0.3s;
 }
 
-button:hover {
+.auth-page button:hover {
   box-shadow: 4px 4px 0px var(--primary);
   transform: translate(-2px, -2px);
 }
 
-.divider {
+.auth-page .divider {
   display: flex;
   align-items: center;
   margin: 25px 0;
@@ -104,20 +107,21 @@ button:hover {
   font-weight: bold;
 }
 
-.divider::before, .divider::after {
+.auth-page .divider::before,
+.auth-page .divider::after {
   content: "";
   flex: 1;
   border-bottom: 2px solid var(--primary);
   margin: 0 10px;
 }
 
-.social-login {
+.auth-page .social-login {
   display: flex;
   justify-content: center;
   gap: 15px;
 }
 
-.social-btn {
+.auth-page .social-btn {
   width: 50px;
   height: 50px;
   border: 2px solid var(--primary);
@@ -128,18 +132,18 @@ button:hover {
   transition: all 0.3s;
 }
 
-.social-btn:hover {
+.auth-page .social-btn:hover {
   box-shadow: 4px 4px 0px var(--primary);
   transform: translate(-2px, -2px);
 }
 
-.footer {
+.auth-page .footer {
   text-align: center;
   margin-top: 20px;
   color: var(--primary);
 }
 
-.footer a {
+.auth-page .footer a {
   color: var(--primary);
   font-weight: bold;
   text-decoration: underline;

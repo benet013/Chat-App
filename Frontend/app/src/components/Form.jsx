@@ -41,7 +41,7 @@ function Form({method, route}){
 
     return(
         <>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="auth-page">
             <div className="login-container">
                 <h1>{loginOrRegister}</h1>
                 
