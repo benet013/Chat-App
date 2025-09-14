@@ -4,7 +4,7 @@ import MessageInput from "./MessageInput";
 function ChatArea() {
   return (
     <div className="chat-area">
-      <div className="chat-header"></div>
+      <div className="chat-header">TestUser</div>
       <div className="messages">
         <Message text="Hello! How can I help you today?" sent={false} />
         <Message text="I have a question about my order." sent={true} />
