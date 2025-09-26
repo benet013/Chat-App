@@ -1,18 +1,17 @@
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 
-function ChatArea() {
+function ChatArea({username,messages,onSendMessage,onlineStatus}) {
+
   return (
     <div className="chat-area">
-      <div className="chat-header">TestUser</div>
+      <div className="chat-header">{username ? username : "Test"} | {onlineStatus? 'online' : 'offline'}</div>
       <div className="messages">
-        <Message text="Hello! How can I help you today?" sent={false} />
-        <Message text="I have a question about my order." sent={true} />
-        <Message text="Sure! Can you provide your order number?" sent={false} />
-        <Message text="Yes, it's 12345." sent={true} />
-        <Message text="Thank you! Let me check that for you." sent={false} />
+        {messages? messages.map((msg, index) => (
+            <Message key={index} text={msg.message} sent={msg.sent} />
+        )) : null}
       </div>
-      <MessageInput />
+      <MessageInput onSendMessage={onSendMessage}/>
     </div>
     )
 }

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-function MessageInput() {
+function MessageInput({onSendMessage}) {
     const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
         setMessage(e.target.value);
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Message submitted:", message);
+    const handleSubmit = () => {
+        if (message.trim() === "") return;
+        onSendMessage(message);
+        setMessage("");
     }
-
 
     return (
         <div className="message-input">
