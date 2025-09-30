@@ -46,6 +46,7 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         print("Message received from WebSocket:", text_data)
         text_data_json = json.loads(text_data)
+        print("This is my data: ",text_data_json.get('type'))
         
         message = text_data_json['message']
         senderID = self.scope['user'].id
@@ -53,8 +54,6 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         conversationID = self.room_name.split("_")[-1]
         conversation = await self.get_conversation(conversationID)
         sender = await self.get_user(senderID)
-        
-        print(conversation)
 
         await self.save_message(conversation, sender, message)
         
@@ -72,14 +71,27 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         sender = event['sender']
 
         await self.send(text_data=json.dumps({
+            'type' : 'chat_message',
             'message': message,
             'sent' : sender
         }))
         
     async def online_status(self, event):
         await self.send(text_data=json.dumps({
+            'type' : 'online_status',
             'user' : event['user'],
             'status' : event['status']
+        }))
+        
+    async def typing(self, event):
+        user = event['user']
+        receiver = event['receiver']
+        is_typing = event.get('is_typing', False)
+        await self.send(text_data=json.dumps({
+            'type': 'typing',
+            'user': user,
+            'receiver': receiver,
+            'is_typing': is_typing
         }))
         
     @database_sync_to_async
