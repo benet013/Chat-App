@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 
-function MessageInput({onSendMessage}) {
+function MessageInput({onSendMessage, chatSocket}) {
     const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
-        setMessage(e.target.value);
+        setMessage(e.target.value)
+        chatSocket.current.send(JSON.stringify({
+            type: 'typing',
+            message: e.target.value
+        }))
     }
 
     const handleSubmit = () => {

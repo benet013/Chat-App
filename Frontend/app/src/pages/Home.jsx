@@ -13,6 +13,7 @@ function Home() {
     const [otherUser, setOtherUser] = useState(null);
     const [roomName, setRoomName] = useState(null);
     const [status, setStatus] = useState({});
+    const [isTyping, setIsTyping] = useState(false);
     const chatSocket = useRef(null);
 
 
@@ -85,13 +86,12 @@ function Home() {
         const url = `ws://localhost:8000/ws/chat/${roomName}/?token=${token}`;
         chatSocket.current = new WebSocket(url);
 
-        chatSocket.current.onopen = (e) => {
+        chatSocket.current.onopen = () => {
             console.log("Connection established");
         }
 
         chatSocket.current.onmessage = (e) => {
             const data = JSON.parse(e.data);
-            console.log(data.type)
 
             if (data.type === 'online_status') {
                 setStatus(prev => ({ ...prev, [data.user]: data.status === 'online' }));
@@ -101,6 +101,14 @@ function Home() {
                     ...prev,
                     [roomName]: [...(prev[roomName] || []), { 'message': data.message, 'sent': selfUser === data.sent }],
                 }));
+            }
+            else if (data.type === 'typing') {
+                console.log(data, selfUser)
+                if (selfUser !== data.user) {
+                    setIsTyping(true);
+                }setTimeout(() => {
+                    setIsTyping(false);
+                }, 2000);
             }
         }
 
@@ -129,7 +137,13 @@ function Home() {
         <>
             <div className="chat-container">
                 <Sidebar />
-                <ChatArea username={otherUser} messages={roomName ? recentMessage[roomName] : []} onSendMessage={sendMessage} onlineStatus={isPartnerOnline} />
+                <ChatArea 
+                    username={otherUser} 
+                    messages={roomName ? recentMessage[roomName] : []} 
+                    onSendMessage={sendMessage} 
+                    onlineStatus={isPartnerOnline} 
+                    chatSocket={chatSocket} 
+                    isTyping={isTyping}/>
             </div>
         </>
     )

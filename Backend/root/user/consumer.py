@@ -46,7 +46,7 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         print("Message received from WebSocket:", text_data)
         text_data_json = json.loads(text_data)
-        print("This is my data: ",text_data_json.get('type'))
+        print("This is my data: ",text_data_json)
         
         message = text_data_json['message']
         senderID = self.scope['user'].id
@@ -54,17 +54,27 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         conversationID = self.room_name.split("_")[-1]
         conversation = await self.get_conversation(conversationID)
         sender = await self.get_user(senderID)
-
-        await self.save_message(conversation, sender, message)
         
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type' : 'chat_message',
-                'message' : message,
-                'sender' : senderID
-            }
-        ),
+        if text_data_json.get('type') == 'typing':
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type' : 'typing',
+                    'user' : senderID
+                }
+            )
+
+        if text_data_json.get('type') == 'chat_message':
+            await self.save_message(conversation, sender, message)
+        
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type' : 'chat_message',
+                    'message' : message,
+                    'sender' : senderID
+                }
+            )
         
     async def chat_message(self,event):
         message = event['message']
@@ -85,13 +95,9 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         
     async def typing(self, event):
         user = event['user']
-        receiver = event['receiver']
-        is_typing = event.get('is_typing', False)
         await self.send(text_data=json.dumps({
             'type': 'typing',
             'user': user,
-            'receiver': receiver,
-            'is_typing': is_typing
         }))
         
     @database_sync_to_async
