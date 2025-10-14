@@ -7,4 +7,5 @@ urlpatterns = [
     path('getUserId/', user_id, name='user-id'),
     path('conversation/', ConversationCreateIfNotExistsView.as_view(), name='conversation-create'),
     path('getMessages/<str:pk>/', get_messages, name='get-messages'),
+    path('profile/', ProfileView.as_view(), name='profile'),
 ]

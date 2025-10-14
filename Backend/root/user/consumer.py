@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from .models import Profile
 import json
+
 
 class PersonalChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -44,13 +46,9 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         print("WebSocket connection closed.")
         
     async def receive(self, text_data):
-        print("Message received from WebSocket:", text_data)
         text_data_json = json.loads(text_data)
-        print("This is my data: ",text_data_json)
         
-        message = text_data_json['message']
         senderID = self.scope['user'].id
-        
         conversationID = self.room_name.split("_")[-1]
         conversation = await self.get_conversation(conversationID)
         sender = await self.get_user(senderID)
@@ -65,25 +63,34 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
             )
 
         if text_data_json.get('type') == 'chat_message':
+            message = text_data_json['message']
+            
             await self.save_message(conversation, sender, message)
+            
+            sender_image_url = await self.get_sender_image_url(senderID)
+                    
+            print(sender_image_url)
         
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type' : 'chat_message',
                     'message' : message,
-                    'sender' : senderID
+                    'sender' : senderID,
+                    'image' : sender_image_url
                 }
             )
         
     async def chat_message(self,event):
         message = event['message']
         sender = event['sender']
+        image = event['image']
 
         await self.send(text_data=json.dumps({
             'type' : 'chat_message',
             'message': message,
-            'sent' : sender
+            'sent' : sender,
+            'image': image
         }))
         
     async def online_status(self, event):
@@ -132,3 +139,12 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         if conversation:
             return conversation.messages.all().order_by('timestamp')
         return []
+    
+    @database_sync_to_async
+    def get_sender_image_url(self, user_id):
+        user = get_user_model()
+        user = user.objects.select_related('profile').get(id=user_id)
+        Profile.objects.get_or_create(user=user) 
+
+        img = getattr(user.profile, "image", None)
+        return img.url if img else None

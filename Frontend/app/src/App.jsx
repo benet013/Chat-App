@@ -3,6 +3,7 @@ import {BrowserRouter,Routes, Route } from 'react-router-dom';
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/profile";
 
 function RegisterAndLogout(){
   localStorage.clear()
@@ -29,12 +30,20 @@ function App() {
             }
           />
           <Route 
-            path="/user/:id"
+            path="chat/user/:id"
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
             }
+          />
+          <Route 
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
           />
           <Route path="/login" element={<Login />}/>
           <Route path="/logout" element={<Logout />}/>

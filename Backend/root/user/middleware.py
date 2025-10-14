@@ -1,4 +1,3 @@
-# yourapp/middleware.py
 from urllib.parse import parse_qs
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
@@ -29,39 +28,27 @@ def parse_cookies(cookie_header: bytes | None):
 
 
 class JwtCookieAuthMiddleware:
-    """
-    Simple ASGI middleware that validates JWT (from cookie 'access' or ?token=...)
-    and attaches the Django user object to scope['user'].
-    This class returns an ASGI app instance which accepts (scope, receive, send).
-    """
-
     def __init__(self, inner):
-        # inner is the downstream ASGI app (usually URLRouter)
         self.inner = inner
 
     async def __call__(self, scope, receive, send):
-        # Only handle websocket connections here; pass-through other types
         if scope.get("type") != "websocket":
             return await self.inner(scope, receive, send)
 
-        # read headers and querystring
         headers = dict(scope.get("headers", []))
         cookie_header = headers.get(b"cookie")
         token = None
 
-        # try cookie first
         cookies = parse_cookies(cookie_header)
         token = cookies.get("access") or cookies.get("token") or None
 
-        # fallback to ?token=...
         if not token:
             query_string = scope.get("query_string", b"").decode()
             params = parse_qs(query_string)
             token_list = params.get("token")
             if token_list:
                 token = token_list[0]
-
-        # validate token and set scope['user']
+                
         if token:
             try:
                 if getattr(settings, "SIMPLE_JWT", None):
@@ -84,5 +71,4 @@ class JwtCookieAuthMiddleware:
         else:
             scope["user"] = AnonymousUser()
 
-        # Call downstream app with modified scope
         return await self.inner(scope, receive, send)

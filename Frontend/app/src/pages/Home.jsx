@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ChatArea from "../components/ChatArea";
-import Sidebar from "../components/Sidebar";
+import UserSidebar from "../components/Sidebar";
 import "../styles/Home.css"
 import api from "../api";
 import { ACCESS_TOKEN } from "../constant";
@@ -14,6 +14,7 @@ function Home() {
     const [roomName, setRoomName] = useState(null);
     const [status, setStatus] = useState({});
     const [isTyping, setIsTyping] = useState(false);
+    const [imageUrl, setImageUrl] = useState(null);
     const chatSocket = useRef(null);
 
 
@@ -29,7 +30,9 @@ function Home() {
     const getOtherUser = async () => {
         try {
             const response = await api.get(`/getUsers/${id}`);
+            console.log(response.data)
             setOtherUser(response.data['username']);
+            setImageUrl(response.data['profile_image_url'])
 
         } catch (error) {
             console.error("Error fetching user:", error);
@@ -52,13 +55,23 @@ function Home() {
             const response = await api.get(`/getMessages/${conId}/`);
             const messages = response.data;
 
+
             if (conId in recentMessage) return;
             messages.forEach(msg => {
+                const date = new Date(msg.timestamp);
+                
+                const formattedTime = new Intl.DateTimeFormat('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                }).format(date)
+
                 setRecentMessage(prev => ({
                     ...prev,
-                    [conId]: [...(prev[conId] || []), { 'message': msg.content, 'sent': selfUser === msg.sender }],
+                    [conId]: [...(prev[conId] || []), { 'message': msg.content, 'sent': selfUser === msg.sender, 'timestamp': formattedTime , 'image':msg.sender_image_url}],
                 }));
             });
+
         } catch (error) {
             console.error("Error fetching messages:", error);
         }
@@ -70,6 +83,8 @@ function Home() {
 
 
     useEffect(() => {
+
+
         if (selfUser === null || id === undefined) {
             return;
         }
@@ -87,6 +102,7 @@ function Home() {
         chatSocket.current = new WebSocket(url);
 
         chatSocket.current.onopen = () => {
+            chatSocket.current.send(JSON.stringify({ 'type': 'online/offline', 'roomname': roomName, 'user': selfUser }));
             console.log("Connection established");
         }
 
@@ -97,16 +113,22 @@ function Home() {
                 setStatus(prev => ({ ...prev, [data.user]: data.status === 'online' }));
             }
             else if (data.type === 'chat_message') {
+                const dateNow = new Date();
+                const formattedTimeNow = new Intl.DateTimeFormat('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                }).format(dateNow)
                 setRecentMessage(prev => ({
                     ...prev,
-                    [roomName]: [...(prev[roomName] || []), { 'message': data.message, 'sent': selfUser === data.sent }],
+                    [roomName]: [...(prev[roomName] || []), { 'message': data.message, 'sent': selfUser === data.sent, 'timestamp': formattedTimeNow , 'image': data.image}],
                 }));
             }
             else if (data.type === 'typing') {
                 console.log(data, selfUser)
                 if (selfUser !== data.user) {
                     setIsTyping(true);
-                }setTimeout(() => {
+                } setTimeout(() => {
                     setIsTyping(false);
                 }, 2000);
             }
@@ -130,20 +152,21 @@ function Home() {
             console.warn("Socket not open yet.");
         }
     };
-
+    console.log("Status:", status);
     const isPartnerOnline = otherUser ? !!status[String(otherUser)] : false;
 
     return (
         <>
-            <div className="chat-container">
-                <Sidebar />
-                <ChatArea 
-                    username={otherUser} 
-                    messages={roomName ? recentMessage[roomName] : []} 
-                    onSendMessage={sendMessage} 
-                    onlineStatus={isPartnerOnline} 
-                    chatSocket={chatSocket} 
-                    isTyping={isTyping}/>
+            <div className="app-container">
+                <UserSidebar />
+                <ChatArea
+                    username={otherUser}
+                    image ={imageUrl}
+                    messages={roomName ? recentMessage[roomName] : []}
+                    onSendMessage={sendMessage}
+                    onlineStatus={isPartnerOnline}
+                    chatSocket={chatSocket}
+                    isTyping={isTyping} />
             </div>
         </>
     )
