@@ -2,6 +2,8 @@
 
 ChatHub is a real-time chat application built with **Django + Django Channels** on the backend and **React (Vite)** on the frontend. It features secure JWT authentication, WebSocket-powered messaging, profile management with image uploads, and online/offline/typing indicators.
 
+![image alt](https://github.com/benet013/Chat-App/blob/be7e0d503459a4d19249fe00e219f286f6aa2a56/Screenshot%202025-10-14%20184741.png)
+
 ---
 
 ## Features
