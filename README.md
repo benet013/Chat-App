@@ -52,7 +52,7 @@ chat-hub/
 1. Clone the repository
 
 ```
-git clone https://github.com/yourusername/chat-hub.git
+git clone https://github.com/benet013/Chat-App
 cd chat-hub/backend
 ```
 
