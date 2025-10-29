@@ -22,7 +22,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 # CORS_ALLOWED_ORIGINS = [
 #     "https://fullstack-todoapp-3.onrender.com/",
 # ]
@@ -42,11 +41,6 @@ DATABASES = {
         conn_max_age=600,
     )
 }
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
 
 REDIS_URL = os.environ.get("REDIS_URL")
 if not REDIS_URL:
