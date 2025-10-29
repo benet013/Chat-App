@@ -7,6 +7,7 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constant";
 
 function Home() {
+
     const { id } = useParams();
     const [recentMessage, setRecentMessage] = useState({});
     const [selfUser, setSelfUser] = useState(null);
