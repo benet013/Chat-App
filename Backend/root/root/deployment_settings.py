@@ -22,16 +22,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-REDIS_URL = os.environ.get("REDIS_URL")
-if not REDIS_URL:
-    raise ImproperlyConfigured("REDIS_URL environment variable is required for production. Set REDIS_URL in Render environment variables.")
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [REDIS_URL]},
-    },
-}
 
 # CORS_ALLOWED_ORIGINS = [
 #     "https://fullstack-todoapp-3.onrender.com/",
@@ -51,4 +41,20 @@ DATABASES = {
         default=os.environ['DATABASE_URL'],
         conn_max_age=600,
     )
+}
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+
+REDIS_URL = os.environ.get("REDIS_URL")
+if not REDIS_URL:
+    raise ImproperlyConfigured("REDIS_URL environment variable is required for production. Set REDIS_URL in Render environment variables.")
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [REDIS_URL]},
+    },
 }
