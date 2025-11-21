@@ -9,7 +9,7 @@ services:
     ports:
     - 8000:8000
     environment:
-      SECRET_KEY: <YOUR_SECRET_KEY>
+      SECRET_KEY: <SECRET_KEY>
       REDIS_URL: redis://redis:6379
     depends_on:
     - redis

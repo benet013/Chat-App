@@ -2,7 +2,7 @@ import Form from "../components/Form";
 
 function Register(){
     return(
-        <Form method="register" route="/register"/>
+        <Form method="register" route="/register/"/>
     );
 }
 

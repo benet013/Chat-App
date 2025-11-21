@@ -6,6 +6,17 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/profile";
 
+function RegisterAndLogout(){
+  useEffect(() => {
+    try {
+      localStorage.clear();
+    } catch (e) {
+      console.warn("localStorage unavailable:", e);
+    }
+  }, []);
+  return <Register />
+}
+
 function Logout(){
   useEffect(() => {
     try {
@@ -49,7 +60,7 @@ function App() {
           />
           <Route path="/login" element={<Login />}/>
           <Route path="/logout" element={<Logout />}/>
-          <Route path="/register" element={<Register />}/>
+          <Route path="/register" element={<RegisterAndLogout />}/>
         </Routes>
       </BrowserRouter>
     </>
