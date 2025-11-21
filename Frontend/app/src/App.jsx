@@ -1,12 +1,19 @@
 import ProtectedRoute from "./components/ProtectedRoute";
 import {BrowserRouter,Routes, Route } from 'react-router-dom';
+import { useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/profile";
 
 function RegisterAndLogout(){
-  localStorage.clear()
+  useEffect(() => {
+    try {
+      localStorage.clear();
+    } catch (e) {
+      console.warn("localStorage unavailable:", e);
+    }
+  }, []);
   return <Register />
 }
 
