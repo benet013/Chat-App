@@ -3,6 +3,8 @@ import { ACCESS_TOKEN } from './constant';
 
 const isDevelopment = import.meta.env.MODE === 'development';
 
+console.log("IS DEVELOPMENT", isDevelopment)
+
 const api = axios.create({
     baseURL : isDevelopment? import.meta.env.VITE_API_URL_DEVELOPMENT : import.meta.env.VITE_API_URL_DEPLOYMENT,
 })
