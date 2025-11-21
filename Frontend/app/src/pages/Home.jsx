@@ -7,7 +7,6 @@ import api from "../api";
 import { ACCESS_TOKEN } from "../constant";
 
 function Home() {
-
     const { id } = useParams();
     const [recentMessage, setRecentMessage] = useState({});
     const [selfUser, setSelfUser] = useState(null);
@@ -17,7 +16,11 @@ function Home() {
     const [isTyping, setIsTyping] = useState(false);
     const [imageUrl, setImageUrl] = useState(null);
     const chatSocket = useRef(null);
+    const isDevelopment = import.meta.env.MODE === 'development';
 
+    function getWsBase(apiUrl) {
+        return apiUrl.replace(/^http/, "ws");
+    }
 
     const getUserId = async () => {
         try {
@@ -60,7 +63,7 @@ function Home() {
             if (conId in recentMessage) return;
             messages.forEach(msg => {
                 const date = new Date(msg.timestamp);
-                
+
                 const formattedTime = new Intl.DateTimeFormat('en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -69,7 +72,7 @@ function Home() {
 
                 setRecentMessage(prev => ({
                     ...prev,
-                    [conId]: [...(prev[conId] || []), { 'message': msg.content, 'sent': selfUser === msg.sender, 'timestamp': formattedTime , 'image':msg.sender_image_url}],
+                    [conId]: [...(prev[conId] || []), { 'message': msg.content, 'sent': selfUser === msg.sender, 'timestamp': formattedTime, 'image': msg.sender_image_url }],
                 }));
             });
 
@@ -98,8 +101,10 @@ function Home() {
         }
         getMessages(roomName);
 
+        const API_BASE = isDevelopment? import.meta.env.VITE_API_URL_DEVELOPMENT : import.meta.env.VITE_API_URL_DEPLOYMENT
+        const WS_BASE = getWsBase(API_BASE)
         const token = localStorage.getItem(ACCESS_TOKEN);
-        const url = `ws://localhost:8000/ws/chat/${roomName}/?token=${token}`;
+        const url = `${WS_BASE}/ws/chat/${encodeURIComponent(roomName)}/?token=${encodeURIComponent(token)}`;
         chatSocket.current = new WebSocket(url);
 
         chatSocket.current.onopen = () => {
@@ -122,7 +127,7 @@ function Home() {
                 }).format(dateNow)
                 setRecentMessage(prev => ({
                     ...prev,
-                    [roomName]: [...(prev[roomName] || []), { 'message': data.message, 'sent': selfUser === data.sent, 'timestamp': formattedTimeNow , 'image': data.image}],
+                    [roomName]: [...(prev[roomName] || []), { 'message': data.message, 'sent': selfUser === data.sent, 'timestamp': formattedTimeNow, 'image': data.image }],
                 }));
             }
             else if (data.type === 'typing') {
@@ -162,7 +167,7 @@ function Home() {
                 <UserSidebar />
                 <ChatArea
                     username={otherUser}
-                    image ={imageUrl}
+                    image={imageUrl}
                     messages={roomName ? recentMessage[roomName] : []}
                     onSendMessage={sendMessage}
                     onlineStatus={isPartnerOnline}
