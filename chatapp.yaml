@@ -1,0 +1,24 @@
+services:
+  redis:
+    image: redis
+    ports:
+    - 6379:6379
+
+  backend:
+    image: chatapp-server
+    ports:
+    - 8000:8000
+    environment:
+      SECRET_KEY: <YOUR_SECRET_KEY>
+      REDIS_URL: redis://redis:6379
+    depends_on:
+    - redis
+
+  frontend:
+    image: chatapp-client
+    ports:
+    - 5173:5173
+    environment:
+      VITE_API_URL_DEVELOPMENT: http://localhost:8000
+    depends_on:
+    - redis
