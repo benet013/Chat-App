@@ -81,17 +81,31 @@ function Form({method, route}){
                 
                 <div className="divider">OR</div>
                 
-                {loginOrRegister === "LOGIN" && (
+                {/* {loginOrRegister === "LOGIN" && (
                     <div className="footer">
-                        Don't have an account? <a href="/register">Sign up</a>
+                        Don't have an account? <a onClick={() => navigate("/login")}>Login</a>
                     </div>
                 )}
 
                 {loginOrRegister === "REGISTER" && (
                     <div className="footer">
-                        Already have an account? <a href="/login">Sign in</a>
+                        Already have an account? <a onClick={() => navigate("/register")}>Register</a>
                     </div>
-                )}
+                )} */}
+
+                <div className="signup-or-signin">
+                    {loginOrRegister === "LOGIN" ? (
+                        <div className="footer">
+                            <span>Don't have an account?</span>
+                            <a onClick={() => navigate("/register")}>Register</a>
+                        </div>
+                    ) : (
+                        <div className="footer">
+                            <span>Already have an account?</span>
+                            <a onClick={() => navigate("/login")}>Login</a>
+                        </div>
+                    )}
+                </div>
                 
             </div>
         </form>
