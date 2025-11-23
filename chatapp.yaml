@@ -2,23 +2,23 @@ services:
   redis:
     image: redis
     ports:
-    - 6379:6379
+    - "6379:6379"
 
   backend:
     image: chatapp-backend
     ports:
-    - 8000:8000
+    - "8000:8000"
     environment:
-      SECRET_KEY: django-insecure-0=ud5p2+i64f-(&e$r88(7-r*gyz*#=0sv(%wn=m)w0nqlx8y5
-      REDIS_URL: redis://redis:6379
+      SECRET_KEY: 'django-insecure-0=ud5p2+i64f-(&e$r88(7-r*gyz*#=0sv(%wn=m)w0nqlx8y5'
+      REDIS_URL: 'redis://redis:6379'
     depends_on:
     - redis
 
   frontend:
     image: chatapp-client
     ports:
-    - 5173:5173
+    - "5173:5173"
     environment:
-      VITE_API_URL_DEVELOPMENT: http://localhost:8000
+      VITE_API_URL_DEVELOPMENT: 'http://localhost:8000'
     depends_on:
     - redis

@@ -8,7 +8,6 @@ from rest_framework.generics import RetrieveUpdateAPIView
 from .models import *
 from .serializers import *
 
-
 class Register(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerailizer

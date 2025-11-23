@@ -1,5 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_URL_DEPLOYMENT || 'http://localhost:8000';
-
+const isDevelopment = import.meta.env.MODE === 'development';
+const API_BASE = isDevelopment? import.meta.env.VITE_API_URL_DEVELOPMENT : import.meta.env.VITE_API_URL_DEPLOYMENT;
 
 function Message({ text, sent, timestamp, image }) {
     const imgUrl = API_BASE+image;

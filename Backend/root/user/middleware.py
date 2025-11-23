@@ -14,7 +14,6 @@ def get_user(user_id):
     except User.DoesNotExist:
         return AnonymousUser()
 
-
 def parse_cookies(cookie_header: bytes | None):
     if not cookie_header:
         return {}

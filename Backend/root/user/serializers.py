@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import *
 
-
 class UserSerailizer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -27,13 +26,15 @@ class UserListSerializer(serializers.ModelSerializer):
 
     def get_profile_image_url(self, user):
         request = self.context.get('request')
+        default = "/media/default.jpg"
         profile = getattr(user, 'profile', None)
         if profile and profile.image:
             url = profile.image.url
-            if request is not None:
+            if request:
                 return request.build_absolute_uri(url)
             return url
-        return None
+        else:
+            return request.build_absolute_uri(default)
         
         
 class ConversationSerializer(serializers.ModelSerializer):
